@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>考研筑基 · 每日追踪系统</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #dbeafe;
+            --success: #16a34a;
+            --success-light: #dcfce7;
+            --warning: #ca8a04;
+            --warning-light: #fef9c3;
+            --danger: #dc2626;
+            --danger-light: #fee2e2;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-700: #374151;
+            --gray-900: #111827;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --radius: 8px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container { max-width: 960px; margin: 0 auto; padding: 16px; }
+        header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+            color: white;
+            padding: 24px 16px;
+            margin-bottom: 24px;
+        }
+        header h1 { font-size: 1.5rem; font-weight: 700; }
+        header p { opacity: 0.9; margin-top: 4px; font-size: 0.9rem; }
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .nav-tab {
+            padding: 10px 20px;
+            border: none;
+            background: white;
+            color: var(--gray-500);
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all 0.2s;
+            box-shadow: var(--shadow);
+        }
+        .nav-tab:hover { color: var(--primary); }
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-title .icon { font-size: 1.2rem; }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .stat-box {
+            background: white;
+            border-radius: var(--radius);
+            padding: 16px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+
+        /* Forms */
+        .form-group { margin-bottom: 16px; }
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            color: var(--gray-700);
+        }
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+        input[type="text"], input[type="date"], input[type="number"], textarea, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        textarea { resize: vertical; min-height: 80px; }
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px;
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            margin-bottom: 8px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+        .checkbox-group .task-text {
+            flex: 1;
+        }
+        .checkbox-group .task-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 0.95rem;
+            padding: 0;
+        }
+        .checkbox-group .task-input:focus {
+            box-shadow: none;
+            border-bottom: 1px solid var(--primary);
+        }
+        .checkbox-group.completed { opacity: 0.6; }
+        .checkbox-group.completed .task-text { text-decoration: line-through; }
+
+        /* Time tracking row */
+        .time-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 6px;
+            font-size: 0.85rem;
+        }
+        .time-row input { width: 70px; padding: 4px 8px; }
+        .time-row select { width: auto; padding: 4px 8px; }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        .btn-success:hover { background: #15803d; }
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+        .btn-secondary:hover { background: var(--gray-300); }
+        .btn-sm { padding: 6px 12px; font-size: 0.85rem; }
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        /* Schedule table */
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .schedule-table th, .schedule-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .schedule-table th {
+            background: var(--gray-100);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--gray-500);
+        }
+        .schedule-table tr:hover { background: var(--gray-50); }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-primary { background: var(--primary-light); color: var(--primary); }
+        .badge-success { background: var(--success-light); color: var(--success); }
+        .badge-warning { background: var(--warning-light); color: var(--warning); }
+        .badge-danger { background: var(--danger-light); color: var(--danger); }
+        .badge-gray { background: var(--gray-200); color: var(--gray-700); }
+
+        /* Day card in schedule */
+        .day-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+        }
+        .day-card.rest-day { border-left-color: var(--gray-300); }
+        .day-card.weekend { border-left-color: var(--warning); }
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .day-date { font-weight: 700; font-size: 1rem; }
+        .day-tag { font-size: 0.8rem; color: var(--gray-500); }
+        .day-tasks { font-size: 0.9rem; color: var(--gray-700); }
+        .day-tasks li { margin-bottom: 4px; list-style-position: inside; }
+
+        /* Alert */
+        .alert {
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+        }
+        .alert-info { background: var(--primary-light); color: #1e40af; }
+        .alert-success { background: var(--success-light); color: #166534; }
+
+        /* Progress bar */
+        .progress-bar {
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            .container { padding: 12px; }
+            header h1 { font-size: 1.25rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .day-header { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .schedule-table { font-size: 0.8rem; }
+            .schedule-table th, .schedule-table td { padding: 6px; }
+        }
+
+        /* Print styles */
+        @media print {
+            .nav-tabs, .btn-group { display: none; }
+            .tab-content { display: block !important; }
+            .card { box-shadow: none; border: 1px solid var(--gray-300); }
+            body { background: white; }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn 0.3s ease; }
+
+        /* Weekly review specific */
+        .review-section {
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .review-section h4 {
+            font-size: 0.95rem;
+            color: var(--gray-700);
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 480px) {
+            .input-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>考研筑基 · 每日追踪系统</h1>
+            <p>大连医科大学 105200 口腔医学专硕 | 六级500+ & 初试350分目标</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <nav class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('dashboard')">📊 今日概览</button>
+            <button class="nav-tab" onclick="switchTab('daily')">📝 每日计划</button>
+            <button class="nav-tab" onclick="switchTab('weekly')">📈 每周复盘</button>
+            <button class="nav-tab" onclick="switchTab('schedule')">📅 日程总览</button>
+            <button class="nav-tab" onclick="switchTab('data')">💾 数据管理</button>
+        </nav>
+
+        <!-- DASHBOARD -->
+        <div id="tab-dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-value" id="stat-total-days">26</div>
+                    <div class="stat-label">总天数 (5/5-5/30)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="stat-completed">0</div>
+                    <div class="stat-label">已完成天数</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="stat-tasks-done">0</div>
+                    <div class="stat-label">完成任务数</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="stat-rate">0%</div>
+                    <div class="stat-label">任务完成率</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="icon">📅</span> 今日安排</div>
+                <div id="today-schedule">
+                    <p style="color: var(--gray-500);">加载中...</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="icon">✅</span> 今日进度</div>
+                <div id="today-progress">
+                    <p style="color: var(--gray-500);">请前往「每日计划」填写今日数据</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="icon">🔥</span> 连续打卡</div>
+                <div id="streak-info">
+                    <p style="color: var(--gray-500);">暂无打卡记录</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DAILY PLAN -->
+        <div id="tab-daily" class="tab-content">
+            <div class="alert alert-info">
+                💡 <strong>填写指南：</strong>学习前填写前三项，学习结束后填写后三项。
+                点击右侧日期快速切换。数据自动保存在浏览器本地。
+            </div>
+
+            <div class="card">
+                <div class="form-group" style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <label class="form-label">选择日期</label>
+                        <input type="date" id="daily-date" onchange="loadDailyPlan()">
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="setToday()">今天</button>
+                    <button class="btn btn-secondary btn-sm" onclick="prevDay()">← 前一天</button>
+                    <button class="btn btn-secondary btn-sm" onclick="nextDay()">后一天 →</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="icon">🎯</span> 每日结果计划表</div>
+                <div style="margin-bottom: 16px; font-size: 0.9rem; color: var(--gray-500);">
+                    今日必拿下（只写4项，必须具体、可检查）
+                </div>
+
+                <div id="daily-tasks">
+                    <!-- Tasks will be populated by JS -->
+                </div>
+
+                <div class="form-group" style="margin-top: 16px;">
+                    <label class="form-label">完成✅+花费时间 & 未完成❌+花费时间并写原因</label>
+                    <textarea id="daily-completion" placeholder="例如：&#10;1. ✅ 口组第7章复习，45min&#10;2. ❌ 阅读2篇，30min（被实习打断）&#10;3. ✅ 单词50个，25min&#10;4. ✅ 昨日回顾，15min"></textarea>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="icon">📝</span> 今日战果复盘</div>
+                <div class="form-group">
+                    <label class="form-label">攻克（今天具体学会了什么？）</label>
+                    <textarea id="daily-conquered" placeholder="具体、可检验的成果"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">难点（哪个知识点卡住了？）</label>
+                    <textarea id="daily-difficulty" placeholder="卡住的点 + 卡了多久"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">调整（明天是减少/增加任务量，还是改变学习方法重学？）</label>
+                    <textarea id="daily-adjust" placeholder="具体的调整方案"></textarea>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="saveDailyPlan()">💾 保存今日计划</button>
+                <button class="btn btn-secondary" onclick="printDaily()">🖨️ 打印/导出PDF</button>
+            </div>
+        </div>
+
+        <!-- WEEKLY REVIEW -->
+        <div id="tab-weekly" class="tab-content">
+            <div class="alert alert-info">
+                💡 <strong>每周日晚21:00填写。</strong>拿出过去7天的「每日结果计划表」，对照填写。
+            </div>
+
+            <div class="card">
+                <div class="form-group" style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;">
+                    <div>
+                        <label class="form-label">选择周次</label>
+                        <select id="weekly-week" onchange="loadWeeklyReview()">
+                            <option value="4">第4周 (5/4 - 5/10)</option>
+                            <option value="5">第5周 (5/11 - 5/17)</option>
+                            <option value="6">第6周 (5/18 - 5/24)</option>
+                            <option value="7">第7周 (5/25 - 5/31)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="icon">📊</span> 每周复盘表</div>
+
+                <div class="review-section">
+                    <h4>1. 本周时间花在哪了？</h4>
+                    <div class="form-group">
+                        <label class="form-label">主要的时间黑洞是？</label>
+                        <textarea id="wk-time-hole" placeholder="例如：刷手机、午睡过长"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">平均每天能专注学习几个小时？</label>
+                        <input type="number" id="wk-focus-hours" placeholder="例如：3.5" step="0.5">
+                    </div>
+                </div>
+
+                <div class="review-section">
+                    <h4>2. 下周预算怎么分？</h4>
+                    <div class="input-grid">
+                        <div class="form-group">
+                            <label class="form-label">口腔科目投入（小时）</label>
+                            <input type="number" id="wk-budget-dental" placeholder="10.5" step="0.5">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">英语投入（小时）</label>
+                            <input type="number" id="wk-budget-english" placeholder="7" step="0.5">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">复盘投入（小时）</label>
+                            <input type="number" id="wk-budget-review" placeholder="2" step="0.5">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">运动投入（小时）</label>
+                            <input type="number" id="wk-budget-sport" placeholder="3.5" step="0.5">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-section">
+                    <h4>3. 下周的核心目标是什么？</h4>
+                    <div class="form-group">
+                        <label class="form-label">只写1-2个最重要的</label>
+                        <textarea id="wk-goals" placeholder="例如：彻底搞懂口组前3章，超额推进英语单词"></textarea>
+                    </div>
+                </div>
+
+                <div class="review-section">
+                    <h4>4. 有什么需要调整的？</h4>
+                    <div class="form-group">
+                        <label class="form-label">基于本周执行的反思</label>
+                        <textarea id="wk-adjust" placeholder="例如：计划定的太多完不成，需要减少20%；或者某个时间段效率低，需要更换学习内容"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="saveWeeklyReview()">💾 保存本周复盘</button>
+                <button class="btn btn-secondary" onclick="printWeekly()">🖨️ 打印/导出PDF</button>
+            </div>
+        </div>
+
+        <!-- SCHEDULE OVERVIEW -->
+        <div id="tab-schedule" class="tab-content">
+            <div class="alert alert-info">
+                📅 <strong>5月5日 - 5月30日完整日程。</strong>按「推、拉、腿、休」三分化训练，练三休一。
+            </div>
+
+            <div id="schedule-container">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- DATA MANAGEMENT -->
+        <div id="tab-data" class="tab-content">
+            <div class="card">
+                <div class="card-title"><span class="icon">💾</span> 数据管理</div>
+                <p style="margin-bottom: 16px; color: var(--gray-500);">
+                    所有数据保存在浏览器本地存储中。建议定期导出备份，以防清除缓存丢失。
+                </p>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="exportData()">📤 导出数据 (JSON)</button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()">📥 导入数据</button>
+                    <input type="file" id="import-file" style="display:none" accept=".json" onchange="importData(event)">
+                </div>
+
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--gray-200);">
+                    <button class="btn btn-danger" onclick="clearAllData()" style="background: var(--danger); color: white;">🗑️ 清空所有数据</button>
+                    <p class="form-hint" style="margin-top: 8px;">⚠️ 此操作不可恢复！建议先导出备份。</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="icon">📖</span> 学习心法速查</div>
+                <div style="font-size: 0.9rem; line-height: 1.8; color: var(--gray-700);">
+                    <p><strong>学习的本质：</strong>编码 → 巩固 → 提取。用提取代替重读，用间隔代替堆时长。</p>
+                    <p><strong>分数公式：</strong>分数 = 表征质量 × 提取成功率 × 题型映射 × 输出稳定性 × 状态管理</p>
+                    <p><strong>失分五类：</strong>①不会 ②提不出来 ③分不清 ④写不稳 ⑤考场崩</p>
+                    <p><strong>每日追问：</strong>我今天治理的是哪一类失分？哪些动作属于真正提取？</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DATA ====================
+        const START_DATE = '2026-05-05';
+        const END_DATE = '2026-05-30';
+
+        // Pre-filled schedule for May 5-30
+        const SCHEDULE_DATA = {
+            '2026-05-05': {
+                weekday: '周二',
+                gym: '推 (胸+肩前束+三头)',
+                tasks: [
+                    '单词复习：App复习前日六级核心词',
+                    '翻译1篇真题（社会发展/文化类）',
+                    '修复学：牙体缺损修复（第7章精读+山大习题）',
+                    '考研单词：唐迟《词汇的逻辑》1个list'
+                ],
+                modules: ['六级单词', '六级翻译', '修复学', '考研单词']
+            },
+            '2026-05-06': {
+                weekday: '周三',
+                gym: '拉 (背+肩后束+二头)',
+                tasks: [
+                    '听力Section B精听：做题→逐句听写→跟读',
+                    '背诵写作模板1段（现象分析类）',
+                    '颌面外科：口腔颌面部感染（第8章精读+人卫习题）',
+                    '长难句：刘晓艳长难句2个'
+                ],
+                modules: ['六级听力', '六级写作', '颌面外科', '考研长难句']
+            },
+            '2026-05-07': {
+                weekday: '周四',
+                gym: '腿 (深蹲+硬拉+腿屈伸)',
+                tasks: [
+                    '单词复习：App复习前日六级核心词',
+                    '仔细阅读1篇（计时12min）+ 错因标注',
+                    '口组病：口腔黏膜病（第8章精读+华西紫皮习题）',
+                    '考研单词：唐迟《词汇的逻辑》1个list'
+                ],
+                modules: ['六级单词', '六级阅读', '口组病', '考研单词']
+            },
+            '2026-05-08': {
+                weekday: '周五',
+                gym: '休息日',
+                tasks: [
+                    '听力Section C精听：做题→逐句听写→跟读',
+                    '翻译1篇真题（社会发展/文化类）',
+                    '修复学：牙列缺损的可摘修复（第8章精读+山大习题）',
+                    '长难句：刘晓艳长难句2个'
+                ],
+                modules: ['六级听力', '六级翻译', '修复学', '考研长难句']
+            },
+            '2026-05-09': {
+                weekday: '周六',
+                gym: '推 (胸+肩前束+三头)',
+                tasks: [
+                    '六级全真模考（9:00-11:20，严格计时含涂卡）',
+                    '颌面外科：口腔颌面部创伤（第9章精读+人卫习题）',
+                    '模考错题归类分析（定位错/理解错/词义错）',
+                    '本周生词汇总复习'
+                ],
+                modules: ['六级模考', '颌面外科', '错题分析', '单词复习']
+            },
+            '2026-05-10': {
+                weekday: '周日',
+                gym: '拉 (背+肩后束+二头)',
+                tasks: [
+                    '模考错题分析 + 薄弱项专项补强',
+                    '三科本周笔记整理 + 简易思维导图',
+                    '下周计划制定',
+                    '六级写作模板默写'
+                ],
+                modules: ['错题补强', '笔记整理', '计划制定', '模板默写']
+            },
+            '2026-05-11': {
+                weekday: '周一',
+                gym: '腿 (深蹲+硬拉+腿屈伸)',
+                tasks: [
+                    '听力Section A精听：做题→逐句听写→跟读',
+                    '仔细阅读1篇（计时12min）+ 错因标注',
+                    '口组病：牙源性肿瘤（第9章精读+华西紫皮习题）',
+                    '长难句：刘晓艳长难句2个'
+                ],
+                modules: ['六级听力', '六级阅读', '口组病', '考研长难句']
+            },
+            '2026-05-12': {
+                weekday: '周二',
+                gym: '休息日',
+                tasks: [
+                    '单词复习：App复习前日六级核心词',
+                    '翻译1篇真题（社会发展/文化类）',
+                    '修复学：固定桥修复（第9章精读+山大习题）',
+                    '考研单词：唐迟《词汇的逻辑》1个list'
+                ],
+                modules: ['六级单词', '六级翻译', '修复学', '考研单词']
+            },
+            '2026-05-13': {
+                weekday: '周三',
+                gym: '推 (胸+肩前束+三头)',
+                tasks: [
+                    '听力Section B精听：做题→逐句听写→跟读',
+                    '背诵写作模板1段（观点对比类）',
+                    '颌面外科：唾液腺疾病（第10章精读+人卫习题）',
+                    '长难句：刘晓艳长难句2个'
+                ],
+                modules: ['六级听力', '六级写作', '颌面外科', '考研长难句']
+            },
+            '2026-05-14': {
+                weekday: '周四',
+                gym: '拉 (背+肩后束+二头)',
+                tasks: [
+                    '单词复习：App复习前日六级核心词',
+                    '仔细阅读1篇（计时12min）+ 错因标注',
+                    '口组病：颞下颌关节病（第10章精读+华西紫皮习题）',
+                    '考研单词：唐迟《词汇的逻辑》1个list'
+                ],
+                modules: ['六级单词', '六级阅读', '口组病', '考研单词']
+            },
+            '2026-05-15': {
+                weekday: '周五',
+                gym: '腿 (深蹲+硬拉+腿屈伸)',
+                tasks: [
+                    '听力Section C精听：做题→逐句听写→跟读',
+                    '翻译1篇真题（社会发展/文化类）',
+                    '修复学：全口义齿（第10章精读+山大习题）',
+                    '长难句：刘晓艳长难句2个'
+                ],
+                modules: ['六级听力', '六级翻译', '修复学', '考研长难句']
+            },
+            '2026-05-16': {
+                weekday: '周六',
+                gym: '休息日',
+                tasks: [
+                    '六级全真模考（9:00-11:20，严格计时含涂卡）',
+                    '颌面外科：颌骨疾病（第11章精读+人卫习题）',
+                    '模考错题归类分析',
+                    '本周生词汇总复习'
+                ],
+                modules: ['六级模考', '颌面外科', '错题分析', '单词复习']
+            },
+            '2026-05-17': {
+                weekday: '周日',
+                gym: '推 (胸+肩前束+三头)',
+                tasks: [
+                    '模考错题分析 + 薄弱项专项补强',
+                    '三科本周笔记整理 + 简易思维导图',
+                    '下周计划制定',
+                    '六级写作模板默写'
+                ],
+                modules: ['错题补强', '笔记整理', '计划制定', '模板默写']
+            },
+            '2026-05-18': {
+                weekday: '周一',
+                gym: '拉 (背+肩后束+二头)',
+                tasks: [
+                    '听力Section A精听：做题→逐句听写→跟读',
+                    '仔细阅读1篇（计时12min）+ 错因标注',
+                    '口组病：口腔颌面部发育（第11章精读+华西紫皮习题）',
+                    '长难句：刘晓艳长难句2个'
+                ],
+                modules: ['六级听力', '六级阅读', '口组病', '考研长难句']
+            },
+            '2026-05-19': {
+                weekday: '周二',
+                gym: '腿 (深蹲+硬拉+腿屈伸)',
+                tasks: [
+                    '单词复习：App复习前日六级核心词',
+                    '翻译1篇真题（社会发展/文化类）',
+                    '修复学：种植修复（第11章精读+山大习题）',
+                    '考研单词：唐迟《词汇的逻辑》1个list'
+                ],
+                modules: ['六级单词', '六级翻译', '修复学', '考研单词']
+            },
+            '2026-05-20': {
+                weekday: '周三',
+                gym: '休息日',
+                tasks: [
+                    '听力Section B精听：做题→逐句听写→跟读',
+                    '背诵写作模板1段（问题解决类）',
+                    '颌面外科：口腔颌面部肿瘤（第12章精读+人卫习题）',
+                    '长难句：刘晓艳长难句2个'
+                ],
+                modules: ['六级听力', '六级写作', '颌面外科', '考研长难句']
+            },
+            '2026-05-21': {
+                weekday: '周四',
+                gym: '推 (胸+肩前束+三头)',
+                tasks: [
+                    '单词复习：App复习前日六级核心词',
+                    '仔细阅读1篇（计时12min）+ 错因标注',
+                    '口组病：龋病（第12章精读+华西紫皮习题）',
+                    '考研单词：唐迟《词汇的逻辑》1个list'
+                ],
+                modules: ['六级单词', '六级阅读', '口组病', '考研单词']
+            },
+            '2026-05-22': {
+                weekday: '周五',
+                gym: '拉 (背+肩后束+二头)',
+                tasks: [
+                    '听力Section C精听：做题→逐句听写→跟读',
+                    '翻译1篇真题（社会发展/文化类）',
+                    '修复学：附着体义齿（第12章精读+山大习题）',
+                    '长难句：刘晓艳长难句2个'
+                ],
+                modules: ['六级听力', '六级翻译', '修复学', '考研长难句']
+            },
+            '2026-05-23': {
+                weekday: '周六',
+                gym: '腿 (深蹲+硬拉+腿屈伸)',
+                tasks: [
+                    '六级全真模考（9:00-11:20，严格计时含涂卡）',
+                    '颌面外科：正颌外科（第13章精读+人卫习题）',
+                    '模考错题归类分析',
+                    '本周生词汇总复习'
+                ],
+                modules: ['六级模考', '颌面外科', '错题分析', '单词复习']
+            },
+            '2026-05-24': {
+                weekday: '周日',
+                gym: '休息日',
+                tasks: [
+                    '模考错题分析 + 薄弱项专项补强',
+                    '三科本周笔记整理 + 简易思维导图',
+                    '下周计划制定',
+                    '六级写作模板默写'
+                ],
+                modules: ['错题补强', '笔记整理', '计划制定', '模板默写']
+            },
+            '2026-05-25': {
+                weekday: '周一',
+                gym: '推 (胸+肩前束+三头)',
+                tasks: [
+                    '听力Section A精听：做题→逐句听写→跟读',
+                    '仔细阅读1篇（计时12min）+ 错因标注',
+                    '口组病：牙髓病（第13章精读+华西紫皮习题）',
+                    '长难句：刘晓艳长难句2个'
+                ],
+                modules: ['六级听力', '六级阅读', '口组病', '考研长难句']
+            },
+            '2026-05-26': {
+                weekday: '周二',
+                gym: '拉 (背+肩后束+二头)',
+                tasks: [
+                    '单词复习：App复习前日六级核心词',
+                    '翻译1篇真题（社会发展/文化类）',
+                    '修复学：赝复体（第13章精读+山大习题）',
+                    '考研单词：唐迟《词汇的逻辑》1个list'
+                ],
+                modules: ['六级单词', '六级翻译', '修复学', '考研单词']
+            },
+            '2026-05-27': {
+                weekday: '周三',
+                gym: '腿 (深蹲+硬拉+腿屈伸)',
+                tasks: [
+                    '听力Section B精听：做题→逐句听写→跟读',
+                    '背诵写作模板1段（图表类）',
+                    '颌面外科：唇腭裂（第14章精读+人卫习题）',
+                    '长难句：刘晓艳长难句2个'
+                ],
+                modules: ['六级听力', '六级写作', '颌面外科', '考研长难句']
+            },
+            '2026-05-28': {
+                weekday: '周四',
+                gym: '休息日',
+                tasks: [
+                    '单词复习：App复习前日六级核心词',
+                    '仔细阅读1篇（计时12min）+ 错因标注',
+                    '口组病：牙周病（第14章精读+华西紫皮习题）',
+                    '考研单词：唐迟《词汇的逻辑》1个list'
+                ],
+                modules: ['六级单词', '六级阅读', '口组病', '考研单词']
+            },
+            '2026-05-29': {
+                weekday: '周五',
+                gym: '推 (胸+肩前束+三头)',
+                tasks: [
+                    '听力Section C精听：做题→逐句听写→跟读',
+                    '翻译1篇真题（社会发展/文化类）',
+                    '修复学：咬合重建（第14章精读+山大习题）',
+                    '长难句：刘晓艳长难句2个'
+                ],
+                modules: ['六级听力', '六级翻译', '修复学', '考研长难句']
+            },
+            '2026-05-30': {
+                weekday: '周六',
+                gym: '拉 (背+肩后束+二头)',
+                tasks: [
+                    '六级全真模考（9:00-11:20，严格计时含涂卡）',
+                    '颌面外科：种植外科（第15章精读+人卫习题）',
+                    '模考错题归类分析',
+                    '本周生词汇总复习'
+                ],
+                modules: ['六级模考', '颌面外科', '错题分析', '单词复习']
+            }
+        };
+
+        // ==================== UTILS ====================
+        function $(id) { return document.getElementById(id); }
+
+        function formatDate(dateStr) {
+            const d = new Date(dateStr + 'T00:00:00');
+            return `${d.getMonth()+1}月${d.getDate()}日`;
+        }
+
+        function getTodayStr() {
+            const d = new Date();
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth()+1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        function addDays(dateStr, days) {
+            const d = new Date(dateStr + 'T00:00:00');
+            d.setDate(d.getDate() + days);
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth()+1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        function getStorage(key) {
+            try {
+                return JSON.parse(localStorage.getItem(key) || '{}');
+            } catch { return {}; }
+        }
+
+        function setStorage(key, val) {
+            localStorage.setItem(key, JSON.stringify(val));
+        }
+
+        // ==================== TABS ====================
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            $(`tab-${tabId}`).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabId === 'dashboard') updateDashboard();
+            if (tabId === 'daily') loadDailyPlan();
+            if (tabId === 'weekly') loadWeeklyReview();
+            if (tabId === 'schedule') renderSchedule();
+        }
+
+        // ==================== DASHBOARD ====================
+        function updateDashboard() {
+            const dailyData = getStorage('dailyPlans');
+            const dates = Object.keys(SCHEDULE_DATA);
+            let completedDays = 0, totalTasks = 0, doneTasks = 0;
+
+            dates.forEach(date => {
+                const plan = dailyData[date];
+                if (plan && plan.tasks) {
+                    const dayDone = plan.tasks.filter(t => t.done).length;
+                    if (dayDone === 4) completedDays++;
+                    doneTasks += dayDone;
+                    totalTasks += 4;
+                }
+            });
+
+            $('stat-completed').textContent = completedDays;
+            $('stat-tasks-done').textContent = doneTasks;
+            const rate = totalTasks > 0 ? Math.round(doneTasks / totalTasks * 100) : 0;
+            $('stat-rate').textContent = rate + '%';
+
+            // Today's schedule
+            const today = getTodayStr();
+            const todaySchedule = SCHEDULE_DATA[today];
+            if (todaySchedule) {
+                let html = `<div class="day-card fade-in">
+                    <div class="day-header">
+                        <span class="day-date">今天：${formatDate(today)} ${todaySchedule.weekday}</span>
+                        <span class="badge badge-primary">${todaySchedule.gym}</span>
+                    </div>
+                    <ul class="day-tasks">`;
+                todaySchedule.tasks.forEach(t => {
+                    html += `<li>${t}</li>`;
+                });
+                html += `</ul></div>`;
+                $('today-schedule').innerHTML = html;
+            } else {
+                $('today-schedule').innerHTML = '<p>今天不在5月5日-5月30日计划范围内</p>';
+            }
+
+            // Today's progress
+            const todayPlan = dailyData[today];
+            if (todayPlan && todayPlan.tasks) {
+                const done = todayPlan.tasks.filter(t => t.done).length;
+                const pct = Math.round(done / 4 * 100);
+                let html = `<div style="margin-bottom: 8px;"><strong>今日完成：${done}/4 (${pct}%)</strong></div>`;
+                html += `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>`;
+                html += `<ul style="margin-top: 12px; font-size: 0.9rem;">`;
+                todayPlan.tasks.forEach((t, i) => {
+                    html += `<li style="margin-bottom:4px;">${t.done ? '✅' : '⬜'} ${t.text || `任务${i+1}`}</li>`;
+                });
+                html += '</ul>';
+                if (todayPlan.conquered) html += `<div style="margin-top:12px; padding:8px; background:var(--success-light); border-radius:4px;"><strong>攻克：</strong>${todayPlan.conquered}</div>`;
+                $('today-progress').innerHTML = html;
+            } else {
+                $('today-progress').innerHTML = '<p style="color: var(--gray-500);">请前往「每日计划」填写今日数据</p>';
+            }
+
+            // Streak
+            let streak = 0;
+            for (let i = dates.length - 1; i >= 0; i--) {
+                const plan = dailyData[dates[i]];
+                if (plan && plan.tasks && plan.tasks.filter(t => t.done).length >= 3) {
+                    streak++;
+                } else if (dates[i] < today) {
+                    break;
+                }
+            }
+            if (streak > 0) {
+                $('streak-info').innerHTML = `<div style="font-size: 1.5rem; font-weight: 700; color: var(--warning);">🔥 ${streak} 天连续打卡</div>`;
+            } else {
+                $('streak-info').innerHTML = '<p style="color: var(--gray-500);">完成今日计划开始打卡！</p>';
+            }
+        }
+
+        // ==================== DAILY PLAN ====================
+        function setToday() {
+            $('daily-date').value = getTodayStr();
+            loadDailyPlan();
+        }
+
+        function prevDay() {
+            const current = $('daily-date').value;
+            if (current) {
+                $('daily-date').value = addDays(current, -1);
+                loadDailyPlan();
+            }
+        }
+
+        function nextDay() {
+            const current = $('daily-date').value;
+            if (current) {
+                $('daily-date').value = addDays(current, 1);
+                loadDailyPlan();
+            }
+        }
+
+        function loadDailyPlan() {
+            const date = $('daily-date').value;
+            if (!date) {
+                $('daily-date').value = getTodayStr();
+                return loadDailyPlan();
+            }
+
+            const schedule = SCHEDULE_DATA[date];
+            const data = getStorage('dailyPlans');
+            const saved = data[date] || {};
+
+            // Build task inputs
+            let tasksHtml = '';
+            const defaultTasks = schedule ? schedule.tasks : ['', '', '', ''];
+
+            for (let i = 0; i < 4; i++) {
+                const task = saved.tasks && saved.tasks[i] ? saved.tasks[i] : { text: defaultTasks[i] || '', done: false };
+                const checked = task.done ? 'checked' : '';
+                const completedClass = task.done ? 'completed' : '';
+                tasksHtml += `
+                    <div class="checkbox-group ${completedClass}">
+                        <input type="checkbox" id="task-${i}" ${checked} onchange="toggleTask(${i})">
+                        <div class="task-text">
+                            <input type="text" class="task-input" id="task-text-${i}" value="${task.text || ''}" placeholder="任务${i+1}（必填具体、可检查的内容）">
+                            <div class="time-row">
+                                <select id="task-status-${i}">
+                                    <option value="done" ${task.status === 'done' ? 'selected' : ''}>✅ 完成</option>
+                                    <option value="partial" ${task.status === 'partial' ? 'selected' : ''}>⚠️ 部分</option>
+                                    <option value="failed" ${task.status === 'failed' ? 'selected' : ''}>❌ 未完成</option>
+                                </select>
+                                <input type="text" id="task-time-${i}" value="${task.time || ''}" placeholder="耗时">
+                                <span>min</span>
+                                <input type="text" id="task-reason-${i}" value="${task.reason || ''}" placeholder="原因（未完成时填）" style="flex:1; min-width:120px;">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            $('daily-tasks').innerHTML = tasksHtml;
+
+            // Load saved data
+            $('daily-completion').value = saved.completion || '';
+            $('daily-conquered').value = saved.conquered || '';
+            $('daily-difficulty').value = saved.difficulty || '';
+            $('daily-adjust').value = saved.adjust || '';
+        }
+
+        function toggleTask(idx) {
+            const cb = $(`task-${idx}`);
+            const group = cb.closest('.checkbox-group');
+            if (cb.checked) {
+                group.classList.add('completed');
+            } else {
+                group.classList.remove('completed');
+            }
+        }
+
+        function saveDailyPlan() {
+            const date = $('daily-date').value;
+            if (!date) return alert('请先选择日期');
+
+            const tasks = [];
+            for (let i = 0; i < 4; i++) {
+                tasks.push({
+                    text: $(`task-text-${i}`).value,
+                    done: $(`task-${i}`).checked,
+                    status: $(`task-status-${i}`).value,
+                    time: $(`task-time-${i}`).value,
+                    reason: $(`task-reason-${i}`).value
+                });
+            }
+
+            const data = getStorage('dailyPlans');
+            data[date] = {
+                tasks,
+                completion: $('daily-completion').value,
+                conquered: $('daily-conquered').value,
+                difficulty: $('daily-difficulty').value,
+                adjust: $('daily-adjust').value,
+                updatedAt: new Date().toISOString()
+            };
+            setStorage('dailyPlans', data);
+
+            // Show success
+            const btn = event.target;
+            const original = btn.textContent;
+            btn.textContent = '✅ 已保存';
+            btn.style.background = 'var(--success)';
+            setTimeout(() => {
+                btn.textContent = original;
+                btn.style.background = '';
+            }, 1500);
+
+            updateDashboard();
+        }
+
+        function printDaily() {
+            window.print();
+        }
+
+        // ==================== WEEKLY REVIEW ====================
+        function loadWeeklyReview() {
+            const week = $('weekly-week').value;
+            const data = getStorage('weeklyReviews');
+            const saved = data[week] || {};
+
+            $('wk-time-hole').value = saved.timeHole || '';
+            $('wk-focus-hours').value = saved.focusHours || '';
+            $('wk-budget-dental').value = saved.budgetDental || '';
+            $('wk-budget-english').value = saved.budgetEnglish || '';
+            $('wk-budget-review').value = saved.budgetReview || '';
+            $('wk-budget-sport').value = saved.budgetSport || '';
+            $('wk-goals').value = saved.goals || '';
+            $('wk-adjust').value = saved.adjust || '';
+        }
+
+        function saveWeeklyReview() {
+            const week = $('weekly-week').value;
+            const data = getStorage('weeklyReviews');
+            data[week] = {
+                timeHole: $('wk-time-hole').value,
+                focusHours: $('wk-focus-hours').value,
+                budgetDental: $('wk-budget-dental').value,
+                budgetEnglish: $('wk-budget-english').value,
+                budgetReview: $('wk-budget-review').value,
+                budgetSport: $('wk-budget-sport').value,
+                goals: $('wk-goals').value,
+                adjust: $('wk-adjust').value,
+                updatedAt: new Date().toISOString()
+            };
+            setStorage('weeklyReviews', data);
+
+            const btn = event.target;
+            const original = btn.textContent;
+            btn.textContent = '✅ 已保存';
+            btn.style.background = 'var(--success)';
+            setTimeout(() => {
+                btn.textContent = original;
+                btn.style.background = '';
+            }, 1500);
+        }
+
+        function printWeekly() {
+            window.print();
+        }
+
+        // ==================== SCHEDULE ====================
+        function renderSchedule() {
+            const container = $('schedule-container');
+            let html = '';
+            const dates = Object.keys(SCHEDULE_DATA).sort();
+
+            dates.forEach(date => {
+                const s = SCHEDULE_DATA[date];
+                const isRest = s.gym.includes('休息');
+                const isWeekend = s.weekday === '周六' || s.weekday === '周日';
+                const cardClass = isRest ? 'rest-day' : (isWeekend ? 'weekend' : '');
+                const dailyData = getStorage('dailyPlans');
+                const saved = dailyData[date];
+                const doneCount = saved && saved.tasks ? saved.tasks.filter(t => t.done).length : 0;
+                const statusBadge = doneCount === 4 ? '<span class="badge badge-success">✅ 完成</span>' :
+                                   doneCount > 0 ? `<span class="badge badge-warning">⚠️ ${doneCount}/4</span>` :
+                                   '<span class="badge badge-gray">待完成</span>';
+
+                html += `
+                    <div class="day-card ${cardClass}">
+                        <div class="day-header">
+                            <div>
+                                <span class="day-date">${formatDate(date)} ${s.weekday}</span>
+                                <span style="margin-left: 8px;">${statusBadge}</span>
+                            </div>
+                            <span class="badge ${isRest ? 'badge-gray' : 'badge-primary'}">${s.gym}</span>
+                        </div>
+                        <ul class="day-tasks">`;
+                s.tasks.forEach(t => {
+                    html += `<li>${t}</li>`;
+                });
+                html += `</ul>
+                        <div style="margin-top: 8px; font-size: 0.8rem; color: var(--gray-500);">
+                            模块：${s.modules.join(' → ')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // ==================== DATA MANAGEMENT ====================
+        function exportData() {
+            const data = {
+                dailyPlans: getStorage('dailyPlans'),
+                weeklyReviews: getStorage('weeklyReviews'),
+                exportedAt: new Date().toISOString(),
+                version: '1.0'
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `考研追踪数据_${getTodayStr()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.dailyPlans) setStorage('dailyPlans', data.dailyPlans);
+                    if (data.weeklyReviews) setStorage('weeklyReviews', data.weeklyReviews);
+                    alert('✅ 数据导入成功');
+                    updateDashboard();
+                } catch {
+                    alert('❌ 导入失败：文件格式不正确');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ 确定要清空所有数据吗？此操作不可恢复！\n\n建议先导出备份。')) {
+                localStorage.removeItem('dailyPlans');
+                localStorage.removeItem('weeklyReviews');
+                alert('🗑️ 数据已清空');
+                updateDashboard();
+            }
+        }
+
+        // ==================== INIT ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            $('daily-date').value = getTodayStr();
+            updateDashboard();
+            loadDailyPlan();
+            renderSchedule();
+        });
+    </script>
+</body>
+</html>
